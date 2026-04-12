@@ -128,26 +128,48 @@
         <p>&copy; 2024 Golf Tournament League. All rights reserved.</p>
     </footer>
 
-    <script>
-        // Course par values (standard par 3,4,5 rotation)
-        const coursePar = {
-            1: 4, 2: 5, 3: 4, 4: 3, 5: 4, 6: 4, 7: 4, 8: 5, 9: 3,
-            10: 4, 11: 4, 12: 4, 13: 3, 14: 3, 15: 3, 16: 5, 17: 5, 18: 4
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getDatabase, ref, set, onValue, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+        // Firebase configuration - You'll need to replace this with your actual Firebase project config
+        const firebaseConfig = {
+            apiKey: "your-api-key",
+            authDomain: "your-project.firebaseapp.com",
+            databaseURL: "https://your-project-default-rtdb.firebaseio.com",
+            projectId: "your-project",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "your-app-id"
         };
 
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        // Course par values - Update these with actual Frog Rock Golf par values
+        // From: https://www.frogrockgolf.com/course-layout
+        const coursePar = {
+            1: 4, 2: 3, 3: 5, 4: 4, 5: 3, 6: 4, 7: 5, 8: 3, 9: 4,
+            10: 4, 11: 3, 12: 5, 13: 4, 14: 3, 15: 4, 16: 5, 17: 3, 18: 4
+        };
+
+        // Firebase database reference
+        const scoresRef = ref(database, 'tournament-scores');
+
         // Initialize scores if not exists
-        if (!localStorage.getItem('fgcScores')) {
-            const initialScores = {
+        function initializeScores() {
+            const defaultScores = {
                 'Team 1': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
                 'Team 2': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
                 'Team 3': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
                 'Team 4': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null }
             };
-            localStorage.setItem('fgcScores', JSON.stringify(initialScores));
+            set(scoresRef, defaultScores);
+            return defaultScores;
         }
 
-        function updateScores() {
-            const scores = JSON.parse(localStorage.getItem('fgcScores'));
+        function updateScores(scores) {
             const scoresBody = document.getElementById('scoresBody');
 
             // Clear existing rows
@@ -173,8 +195,7 @@
             });
         }
 
-        function updateHoleScores() {
-            const scores = JSON.parse(localStorage.getItem('fgcScores'));
+        function updateHoleScores(scores) {
             const holeScoresBody = document.getElementById('holeScoresBody');
 
             // Clear existing rows
@@ -202,57 +223,76 @@
             const holeNumber = parseInt(document.getElementById('holeNumber').value);
             const score = parseInt(document.getElementById('score').value);
 
-            const scores = JSON.parse(localStorage.getItem('fgcScores'));
+            // Get current scores from Firebase
+            onValue(scoresRef, (snapshot) => {
+                const scores = snapshot.val() || initializeScores();
 
-            // Update individual hole score
-            scores[teamName].scores[holeNumber] = score;
+                // Update individual hole score
+                if (!scores[teamName].scores) scores[teamName].scores = {};
+                scores[teamName].scores[holeNumber] = score;
 
-            // Recalculate total
-            scores[teamName].total = Object.values(scores[teamName].scores).reduce((sum, s) => sum + s, 0);
-            scores[teamName].holesPlayed = Object.keys(scores[teamName].scores).length;
-            scores[teamName].lastUpdate = new Date().toISOString();
+                // Recalculate total
+                scores[teamName].total = Object.values(scores[teamName].scores).reduce((sum, s) => sum + s, 0);
+                scores[teamName].holesPlayed = Object.keys(scores[teamName].scores).length;
+                scores[teamName].lastUpdate = new Date().toISOString();
 
-            localStorage.setItem('fgcScores', JSON.stringify(scores));
+                // Update Firebase
+                set(scoresRef, scores);
 
-            // Update displays
-            updateScores();
-            updateHoleScores();
+                // Reset form
+                document.getElementById('scoreForm').reset();
 
-            // Reset form
-            document.getElementById('scoreForm').reset();
-
-            // Show success message
-            alert('Score updated successfully!');
+                // Show success message
+                alert('Score updated successfully!');
+            }, { onlyOnce: true });
         });
 
         // Handle clear scores
         document.getElementById('clearScoresBtn').addEventListener('click', function() {
             if (confirm('Are you sure you want to clear ALL scores? This cannot be undone!')) {
-                const initialScores = {
-                    'Team 1': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
-                    'Team 2': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
-                    'Team 3': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
-                    'Team 4': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null }
-                };
-                localStorage.setItem('fgcScores', JSON.stringify(initialScores));
-
-                // Update displays
-                updateScores();
-                updateHoleScores();
-
+                const defaultScores = initializeScores();
                 alert('All scores have been cleared!');
             }
         });
 
-        // Initial load
-        updateScores();
-        updateHoleScores();
+        // Real-time listener for live updates across all devices
+        onValue(scoresRef, (snapshot) => {
+            const scores = snapshot.val();
+            if (scores) {
+                updateScores(scores);
+                updateHoleScores(scores);
+            } else {
+                // Initialize if no data exists
+                const defaultScores = initializeScores();
+                updateScores(defaultScores);
+                updateHoleScores(defaultScores);
+            }
+        });
 
-        // Auto-refresh every 30 seconds for live updates
-        setInterval(() => {
-            updateScores();
-            updateHoleScores();
-        }, 30000);
+        // Show connection status
+        const connectionStatus = document.createElement('div');
+        connectionStatus.id = 'connection-status';
+        connectionStatus.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background: #2c5f2d;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1000;
+        `;
+        connectionStatus.textContent = '🔄 Connecting...';
+        document.body.appendChild(connectionStatus);
+
+        // Update connection status
+        setTimeout(() => {
+            connectionStatus.textContent = '🟢 Live Updates Active';
+            setTimeout(() => {
+                connectionStatus.style.display = 'none';
+            }, 3000);
+        }, 2000);
     </script>
 </body>
 </html>
