@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#2c5f2d">
+    <meta name="description" content="Golf Tournament League Information">
+    <title>FRC</title>
+    <link rel="icon" type="image/png" href="public/images/fgc.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="public/images/fgc.png" alt="FRC Logo" class="logo-image">
+                <span>FRC</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="scores.html">Live Scores</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <h1>The Frog Rock Classic</h1>
+            <p>The 1st Annual Golf Tournament</p>
+            <div id="countdown-container">
+                <p>Tournament starts in:</p>
+                <div id="countdown"></div>
+            </div>
+        </section>
+
+        <section id="about" class="league-info">
+            <h2>League Information</h2>
+            <div class="info-container">
+                <div class="info-card">
+                    <h3>Tournament Details</h3>
+                    <p>
+                        <br>Handicap System: Teams will be balanced around your partners <br>
+                        <br>Prizes: FGC Cup for the Winners <br>
+                        <br>2-Person Scramble <br>
+                        <br>4 teams of 2 players each, we will split into 2 Groupings <br>
+                        <br>Stroke Play <br>
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h3>Format & Rules</h3>
+                    <p>
+                        <br> If you cannot find your or your partners ball in under 3 minutes you must drop latterally from where you and your group think the ball is lost. <br>
+                        <br> All penalties are 1 additional stroke. <br>
+                        <br> If you go into the water you may drop after the water with a 1 stroke penalty. <br>
+                        <br> You get one Drivers club length not towards the hole on any shot. <br>
+                        <br> If you go into the cart path you get relief plus one Drivers club length not towards the hole. <br>
+                        <br> No Mulligans allowed. <br>
+                        <br> No gimmes allowed. Due to the nature of the tournament, all shots must be played as hit. <br>
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h3>Dates & Location</h3>
+                    <p>                    
+                        <br>Date: Saturday, April 18, 2026 <br>
+                        <br>Time: 9:00 AM (Depending on Grouping) <br>
+                        <br>Location: Frog Rock Golf Course <br>
+                        <br><a href="https://storage.googleapis.com/production-powweb-v1-0-6/656/1707656/BGZ0WDXo/05d2255174584f069ac02efb494a9602?fileName=Frog%20Rock%20Score%20Card.jpg.pdf" target="_blank" class="course-link">📄 View Course Layout & Score Card</a>
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h3>Teams</h3>
+                    <p>
+                        <br>
+                        <strong>Group B</strong><br>
+                        Chris and Puma<br>
+                        Tuck and Mike
+                        <strong>Group A</strong><br>
+                        PV alley<br>
+                        Gods of the Green<br>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <h2>Get in Touch</h2>
+            <p>Questions about the tournament?</p>
+            <p>Email: <a href="mailto:tuckmon56@comcast.net">tuckmon56@comcast.net</a></p>
+            <p>Phone: <a href="tel:+856-994-7455">(856) 994-7455</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <script>
+            // Set the date and time for the tournament
+            const tournamentDate = new Date("April 18, 2026 09:00:00").getTime();
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = tournamentDate - now;
+
+                if (distance < 0) {
+                    document.getElementById("countdown").innerHTML = "Tournament is happening now!";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("countdown").innerHTML =
+                    days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        </script>
+        <p>&copy; 2026 Frog Rock Classic. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#2c5f2d">
+    <meta name="description" content="Live Golf Tournament Scores">
+    <title>Live Scores - FGC</title>
+    <link rel="icon" type="image/png" href="public/images/fgc.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="public/images/fgc.png" alt="FGC Logo" class="logo-image">
+                <span>FGC</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="scores.html" class="active">Live Scores</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Live Tournament Scores</h1>
+            <p>Real-time updates from the Frog Rock Classic</p>
+        </section>
+
+        <section class="score-input">
+            <h2>Update Scores</h2>
+            <form id="scoreForm">
+                <div class="form-group">
+                    <label for="teamName">Team Name:</label>
+                    <select id="teamName" required>
+                        <option value="">Select Team</option>
+                        <option value="Team 1">Team 1</option>
+                        <option value="Team 2">Team 2</option>
+                        <option value="Team 3">Team 3</option>
+                        <option value="Team 4">Team 4</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="holeNumber">Hole Number:</label>
+                    <select id="holeNumber" required>
+                        <option value="">Select Hole</option>
+                        <option value="1">Hole 1</option>
+                        <option value="2">Hole 2</option>
+                        <option value="3">Hole 3</option>
+                        <option value="4">Hole 4</option>
+                        <option value="5">Hole 5</option>
+                        <option value="6">Hole 6</option>
+                        <option value="7">Hole 7</option>
+                        <option value="8">Hole 8</option>
+                        <option value="9">Hole 9</option>
+                        <option value="10">Hole 10</option>
+                        <option value="11">Hole 11</option>
+                        <option value="12">Hole 12</option>
+                        <option value="13">Hole 13</option>
+                        <option value="14">Hole 14</option>
+                        <option value="15">Hole 15</option>
+                        <option value="16">Hole 16</option>
+                        <option value="17">Hole 17</option>
+                        <option value="18">Hole 18</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="score">Score:</label>
+                    <input type="number" id="score" min="1" max="10" required>
+                </div>
+
+                <button type="submit" class="submit-btn">Update Score</button>
+            </form>
+        </section>
+
+        <section class="live-scores">
+            <h2>Current Standings</h2>
+            <div class="scores-container">
+                <table class="scores-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Total Score</th>
+                            <th>Holes Played</th>
+                            <th>Average</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoresBody">
+                        <!-- Scores will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="hole-by-hole">
+            <h2>Hole-by-Hole Scores</h2>
+            <div class="hole-scores-container">
+                <table class="hole-scores-table">
+                    <thead>
+                        <tr>
+                            <th>Hole</th>
+                            <th>Par</th>
+                            <th>Team 1</th>
+                            <th>Team 2</th>
+                            <th>Gods of the Green</th>
+                            <th>PV alley</th>
+                        </tr>
+                    </thead>
+                    <tbody id="holeScoresBody">
+                        <!-- Hole scores will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="admin-controls">
+            <button id="clearScoresBtn" class="clear-btn" title="Clear All Scores (Admin Only)">🗑️ Clear Scores</button>
+        </div>
+        <p>&copy; 2024 Golf Tournament League. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Course par values (standard par 3,4,5 rotation)
+        const coursePar = {
+            1: 4, 2: 5, 3: 4, 4: 3, 5: 4, 6: 4, 7: 4, 8: 5, 9: 3,
+            10: 4, 11: 4, 12: 4, 13: 3, 14: 3, 15: 3, 16: 5, 17: 5, 18: 4
+        };
+
+        // Initialize scores if not exists
+        if (!localStorage.getItem('fgcScores')) {
+            const initialScores = {
+                'Team 1': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                'Team 2': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                'Team 3': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                'Team 4': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null }
+            };
+            localStorage.setItem('fgcScores', JSON.stringify(initialScores));
+        }
+
+        function updateScores() {
+            const scores = JSON.parse(localStorage.getItem('fgcScores'));
+            const scoresBody = document.getElementById('scoresBody');
+
+            // Clear existing rows
+            scoresBody.innerHTML = '';
+
+            // Sort teams by total score (ascending - golf scoring)
+            const sortedTeams = Object.keys(scores).sort((a, b) => scores[a].total - scores[b].total);
+
+            sortedTeams.forEach(teamName => {
+                const team = scores[teamName];
+                const average = team.holesPlayed > 0 ? (team.total / team.holesPlayed).toFixed(1) : '0.0';
+                const lastUpdate = team.lastUpdate ? new Date(team.lastUpdate).toLocaleTimeString() : 'No scores';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${teamName}</td>
+                    <td>${team.total}</td>
+                    <td>${team.holesPlayed}</td>
+                    <td>${average}</td>
+                    <td>${lastUpdate}</td>
+                `;
+                scoresBody.appendChild(row);
+            });
+        }
+
+        function updateHoleScores() {
+            const scores = JSON.parse(localStorage.getItem('fgcScores'));
+            const holeScoresBody = document.getElementById('holeScoresBody');
+
+            // Clear existing rows
+            holeScoresBody.innerHTML = '';
+
+            for (let hole = 1; hole <= 18; hole++) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${hole}</td>
+                    <td>${coursePar[hole]}</td>
+                    <td>${scores['Team 1'].scores[hole] || '-'}</td>
+                    <td>${scores['Team 2'].scores[hole] || '-'}</td>
+                    <td>${scores['Team 3'].scores[hole] || '-'}</td>
+                    <td>${scores['Team 4'].scores[hole] || '-'}</td>
+                `;
+                holeScoresBody.appendChild(row);
+            }
+        }
+
+        // Handle score submission
+        document.getElementById('scoreForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const teamName = document.getElementById('teamName').value;
+            const holeNumber = parseInt(document.getElementById('holeNumber').value);
+            const score = parseInt(document.getElementById('score').value);
+
+            const scores = JSON.parse(localStorage.getItem('fgcScores'));
+
+            // Update individual hole score
+            scores[teamName].scores[holeNumber] = score;
+
+            // Recalculate total
+            scores[teamName].total = Object.values(scores[teamName].scores).reduce((sum, s) => sum + s, 0);
+            scores[teamName].holesPlayed = Object.keys(scores[teamName].scores).length;
+            scores[teamName].lastUpdate = new Date().toISOString();
+
+            localStorage.setItem('fgcScores', JSON.stringify(scores));
+
+            // Update displays
+            updateScores();
+            updateHoleScores();
+
+            // Reset form
+            document.getElementById('scoreForm').reset();
+
+            // Show success message
+            alert('Score updated successfully!');
+        });
+
+        // Handle clear scores
+        document.getElementById('clearScoresBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear ALL scores? This cannot be undone!')) {
+                const initialScores = {
+                    'Team 1': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                    'Team 2': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                    'Team 3': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                    'Team 4': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null }
+                };
+                localStorage.setItem('fgcScores', JSON.stringify(initialScores));
+
+                // Update displays
+                updateScores();
+                updateHoleScores();
+
+                alert('All scores have been cleared!');
+            }
+        });
+
+        // Initial load
+        updateScores();
+        updateHoleScores();
+
+        // Auto-refresh every 30 seconds for live updates
+        setInterval(() => {
+            updateScores();
+            updateHoleScores();
+        }, 30000);
+    </script>
+</body>
+</html>

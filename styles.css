@@ -1,0 +1,754 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Merriweather:wght@400;700&display=swap');
+
+body {
+    font-family: 'Merriweather', 'Georgia', serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+/* Header & Navigation */
+header {
+    background-color: #2c5f2d;
+    color: white;
+    padding: 1rem 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-image {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: #d4af37;
+}
+
+/* Main Content */
+main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    min-height: calc(100vh - 200px);
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #2c5f2d 0%, #1e4620 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+/* Countdown Timer */
+#countdown-container {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+#countdown-container p {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.95;
+}
+
+#countdown {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #d4af37;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* League Info Section */
+.league-info {
+    margin-bottom: 3rem;
+}
+
+.league-info h2 {
+    font-size: 2rem;
+    color: #2c5f2d;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.info-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #2c5f2d;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.info-card h3 {
+    color: #2c5f2d;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.info-card p {
+    color: #555;
+    line-height: 1.8;
+}
+
+/* Course link styling */
+.course-link {
+    display: inline-block;
+    color: #2c5f2d;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    background-color: rgba(212, 175, 55, 0.1);
+    border: 2px solid #d4af37;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.course-link:hover {
+    background-color: #d4af37;
+    color: #2c5f2d;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Teams section specific styling */
+.info-card strong {
+    color: #2c5f2d;
+    font-weight: 600;
+    display: block;
+    margin: 1rem 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 1.1rem;
+}
+
+.info-card:nth-child(4) strong:first-child {
+    margin-top: 0;
+}
+
+/* Schedule Section */
+.schedule {
+    margin-bottom: 3rem;
+}
+
+.schedule h2 {
+    font-size: 2rem;
+    color: #2c5f2d;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.schedule-table thead {
+    background-color: #2c5f2d;
+    color: white;
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.schedule-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Standings Section */
+.standings {
+    margin-bottom: 3rem;
+}
+
+.standings h2 {
+    font-size: 2rem;
+    color: #2c5f2d;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.standings-table thead {
+    background-color: #2c5f2d;
+    color: white;
+}
+
+.standings-table th,
+.standings-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.standings-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Contact Section */
+.contact {
+    background: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3rem;
+}
+
+.contact h2 {
+    color: #2c5f2d;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.contact p {
+    margin: 1rem 0;
+    font-size: 1rem;
+}
+
+.contact a {
+    color: #2c5f2d;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.contact a:hover {
+    color: #1e4620;
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    background-color: #2c5f2d;
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-top: 3rem;
+    position: relative;
+}
+
+footer p {
+    margin: 0.5rem 0;
+}
+
+/* Admin Controls */
+.admin-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.clear-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    opacity: 0.3;
+}
+
+.clear-btn:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Score Input Section */
+.score-input {
+    margin-bottom: 3rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.score-input h2 {
+    color: #2c5f2d;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+#scoreForm {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #2c5f2d;
+}
+
+.form-group select,
+.form-group input {
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: #2c5f2d;
+}
+
+.submit-btn {
+    grid-column: 1 / -1;
+    padding: 1rem 2rem;
+    background-color: #2c5f2d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+}
+
+.submit-btn:hover {
+    background-color: #1e4620;
+}
+
+/* Live Scores Section */
+.live-scores {
+    margin-bottom: 3rem;
+}
+
+.live-scores h2 {
+    font-size: 2rem;
+    color: #2c5f2d;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.scores-container {
+    overflow-x: auto;
+}
+
+.scores-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    min-width: 600px;
+}
+
+.scores-table thead {
+    background-color: #2c5f2d;
+    color: white;
+}
+
+.scores-table th,
+.scores-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.scores-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.scores-table tbody tr:nth-child(1) {
+    background-color: #d4af37;
+    color: #2c5f2d;
+    font-weight: 600;
+}
+
+.scores-table tbody tr:nth-child(1):hover {
+    background-color: #c4a027;
+}
+
+/* Hole-by-Hole Scores */
+.hole-by-hole {
+    margin-bottom: 3rem;
+}
+
+.hole-by-hole h2 {
+    font-size: 2rem;
+    color: #2c5f2d;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.hole-scores-container {
+    overflow-x: auto;
+}
+
+.hole-scores-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    min-width: 800px;
+}
+
+.hole-scores-table thead {
+    background-color: #2c5f2d;
+    color: white;
+}
+
+.hole-scores-table th,
+.hole-scores-table td {
+    padding: 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.hole-scores-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Active nav link */
+.nav-links .active {
+    color: #d4af37 !important;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .nav-links {
+        flex-direction: row;
+        gap: 1rem;
+        text-align: center;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .league-info h2,
+    .schedule h2,
+    .standings h2,
+    .contact h2,
+    .live-scores h2,
+    .hole-by-hole h2,
+    .score-input h2 {
+        font-size: 1.5rem;
+    }
+
+    .schedule-table th,
+    .schedule-table td,
+    .standings-table th,
+    .standings-table td {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    /* Score form mobile optimization */
+    #scoreForm {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .submit-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    /* Scores table mobile optimization */
+    .scores-table,
+    .hole-scores-table {
+        font-size: 0.85rem;
+    }
+
+    .scores-table th,
+    .scores-table td,
+    .hole-scores-table th,
+    .hole-scores-table td {
+        padding: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    main {
+        padding: 1rem 0.5rem;
+    }
+
+    header {
+        padding: 0.5rem 0;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+    }
+
+    .logo-image {
+        height: 40px;
+    }
+
+    .nav-links {
+        gap: 0.8rem;
+    }
+
+    .nav-links a {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+
+    .hero {
+        padding: 1.5rem 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    #countdown-container p {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+    }
+
+    #countdown {
+        font-size: 2rem;
+        padding: 1rem;
+    }
+
+    .info-container {
+        gap: 1.5rem;
+    }
+
+    .info-card strong {
+        font-size: 1rem;
+        margin: 1rem 0 0.4rem 0;
+    }
+
+    .info-card h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .contact {
+        padding: 1.5rem 1rem;
+    }
+    .course-link {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+    }
+    .contact h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Mobile score form */
+    .score-input {
+        padding: 1.5rem 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-group select,
+    .form-group input {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    /* Mobile tables - make them scrollable */
+    .scores-container,
+    .hole-scores-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .scores-table,
+    .hole-scores-table {
+        min-width: 100%;
+        font-size: 0.8rem;
+    }
+
+    .scores-table th,
+    .scores-table td {
+        padding: 0.4rem 0.6rem;
+        white-space: nowrap;
+    }
+
+    .hole-scores-table th,
+    .hole-scores-table td {
+        padding: 0.3rem 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    /* Hide less important columns on very small screens */
+    .scores-table th:nth-child(4),
+    .scores-table td:nth-child(4),
+    .scores-table th:nth-child(5),
+    .scores-table td:nth-child(5) {
+        display: none;
+    }
+
+    /* Mobile footer */
+    footer {
+        padding: 1.5rem 1rem;
+        position: relative;
+    }
+
+    .admin-controls {
+        position: static;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .clear-btn {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+/* Touch-friendly buttons and interactions */
+@media (hover: none) and (pointer: coarse) {
+    .nav-links a,
+    .submit-btn,
+    .clear-btn {
+        min-height: 44px;
+        min-width: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .info-card {
+        transition: none; /* Remove hover effects on touch devices */
+    }
+
+    .scores-table tbody tr,
+    .hole-scores-table tbody tr {
+        transition: none;
+    }
+}
