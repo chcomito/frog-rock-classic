@@ -109,8 +109,8 @@
                             <th>Par</th>
                             <th>Team 1</th>
                             <th>Team 2</th>
-                            <th>Gods of the Green</th>
-                            <th>PV alley</th>
+                            <th>Team 3</th>
+                            <th>Team 4</th>
                         </tr>
                     </thead>
                     <tbody id="holeScoresBody">
@@ -129,53 +129,61 @@
     </footer>
 
     <script type="module">
-        // Import Firebase modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-        import { getDatabase, ref, set, onValue, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+        import { getDatabase, ref, set, onValue, get } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
 
-        // Firebase configuration - You'll need to replace this with your actual Firebase project config
         const firebaseConfig = {
-            apiKey: "your-api-key",
-            authDomain: "your-project.firebaseapp.com",
-            databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-            projectId: "your-project",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "your-app-id"
+            apiKey: "AIzaSyCWTd2_Kvw6u6YeV1rPms_VIzn_uXc3U2o",
+            authDomain: "frog-rock-classic.firebaseapp.com",
+            databaseURL: "https://frog-rock-classic-default-rtdb.firebaseio.com",
+            projectId: "frog-rock-classic",
+            storageBucket: "frog-rock-classic.firebasestorage.app",
+            messagingSenderId: "1025249068857",
+            appId: "1:1025249068857:web:4d1a8e58dd4ab08c760ae8",
+            measurementId: "G-Z8E03XRK0P"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
-        // Course par values - Update these with actual Frog Rock Golf par values
-        // From: https://www.frogrockgolf.com/course-layout
+        const scoresRef = ref(database, 'tournament-scores');
+
         const coursePar = {
             1: 4, 2: 3, 3: 5, 4: 4, 5: 3, 6: 4, 7: 5, 8: 3, 9: 4,
             10: 4, 11: 3, 12: 5, 13: 4, 14: 3, 15: 4, 16: 5, 17: 3, 18: 4
         };
 
-        // Firebase database reference
-        const scoresRef = ref(database, 'tournament-scores');
-
-        // Initialize scores if not exists
-        function initializeScores() {
-            const defaultScores = {
+        function getDefaultScores() {
+            return {
                 'Team 1': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
                 'Team 2': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
                 'Team 3': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
                 'Team 4': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null }
             };
-            set(scoresRef, defaultScores);
-            return defaultScores;
+        }
+
+        function normalizeScores(scores) {
+            const normalized = getDefaultScores();
+            if (!scores || typeof scores !== 'object') return normalized;
+
+            Object.keys(normalized).forEach((teamName) => {
+                if (scores[teamName] && typeof scores[teamName] === 'object') {
+                    normalized[teamName] = {
+                        ...normalized[teamName],
+                        ...scores[teamName],
+                        scores: {
+                            ...normalized[teamName].scores,
+                            ...(scores[teamName].scores || {})
+                        }
+                    };
+                }
+            });
+
+            return normalized;
         }
 
         function updateScores(scores) {
             const scoresBody = document.getElementById('scoresBody');
-
-            // Clear existing rows
             scoresBody.innerHTML = '';
-
-            // Sort teams by total score (ascending - golf scoring)
             const sortedTeams = Object.keys(scores).sort((a, b) => scores[a].total - scores[b].total);
 
             sortedTeams.forEach(teamName => {
@@ -197,8 +205,6 @@
 
         function updateHoleScores(scores) {
             const holeScoresBody = document.getElementById('holeScoresBody');
-
-            // Clear existing rows
             holeScoresBody.innerHTML = '';
 
             for (let hole = 1; hole <= 18; hole++) {
@@ -206,93 +212,68 @@
                 row.innerHTML = `
                     <td>${hole}</td>
                     <td>${coursePar[hole]}</td>
-                    <td>${scores['Team 1'].scores[hole] || '-'}</td>
-                    <td>${scores['Team 2'].scores[hole] || '-'}</td>
-                    <td>${scores['Team 3'].scores[hole] || '-'}</td>
-                    <td>${scores['Team 4'].scores[hole] || '-'}</td>
+                    <td>${scores['Team 1']?.scores?.[hole] ?? '-'}</td>
+                    <td>${scores['Team 2']?.scores?.[hole] ?? '-'}</td>
+                    <td>${scores['Team 3']?.scores?.[hole] ?? '-'}</td>
+                    <td>${scores['Team 4']?.scores?.[hole] ?? '-'}</td>
                 `;
                 holeScoresBody.appendChild(row);
             }
         }
 
-        // Handle score submission
-        document.getElementById('scoreForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        onValue(scoresRef, (snapshot) => {
+            if (!snapshot.exists()) {
+                set(scoresRef, getDefaultScores());
+                return;
+            }
+            const scores = normalizeScores(snapshot.val());
+            updateScores(scores);
+            updateHoleScores(scores);
+        }, (error) => {
+            console.error('Firebase read failed:', error);
+            const scores = getDefaultScores();
+            updateScores(scores);
+            updateHoleScores(scores);
+        });
+
+        document.getElementById('scoreForm').addEventListener('submit', (event) => {
+            event.preventDefault();
 
             const teamName = document.getElementById('teamName').value;
-            const holeNumber = parseInt(document.getElementById('holeNumber').value);
-            const score = parseInt(document.getElementById('score').value);
+            const holeNumber = parseInt(document.getElementById('holeNumber').value, 10);
+            const score = parseInt(document.getElementById('score').value, 10);
 
-            // Get current scores from Firebase
-            onValue(scoresRef, (snapshot) => {
-                const scores = snapshot.val() || initializeScores();
+            console.log('Submit pressed', { teamName, holeNumber, score });
 
-                // Update individual hole score
-                if (!scores[teamName].scores) scores[teamName].scores = {};
-                scores[teamName].scores[holeNumber] = score;
-
-                // Recalculate total
-                scores[teamName].total = Object.values(scores[teamName].scores).reduce((sum, s) => sum + s, 0);
-                scores[teamName].holesPlayed = Object.keys(scores[teamName].scores).length;
-                scores[teamName].lastUpdate = new Date().toISOString();
-
-                // Update Firebase
-                set(scoresRef, scores);
-
-                // Reset form
-                document.getElementById('scoreForm').reset();
-
-                // Show success message
-                alert('Score updated successfully!');
-            }, { onlyOnce: true });
-        });
-
-        // Handle clear scores
-        document.getElementById('clearScoresBtn').addEventListener('click', function() {
-            if (confirm('Are you sure you want to clear ALL scores? This cannot be undone!')) {
-                const defaultScores = initializeScores();
-                alert('All scores have been cleared!');
+            if (!teamName || !holeNumber || !score) {
+                alert('Please select a team, hole, and enter a score.');
+                return;
             }
+
+            get(scoresRef)
+                .then((snapshot) => {
+                    const scores = normalizeScores(snapshot.val());
+                    scores[teamName].scores[holeNumber] = score;
+                    scores[teamName].total = Object.values(scores[teamName].scores).reduce((sum, s) => sum + s, 0);
+                    scores[teamName].holesPlayed = Object.keys(scores[teamName].scores).length;
+                    scores[teamName].lastUpdate = new Date().toISOString();
+                    return set(scoresRef, scores);
+                })
+                .then(() => {
+                    document.getElementById('scoreForm').reset();
+                    alert('Score updated successfully!');
+                })
+                .catch((error) => {
+                    console.error('Score submit failed:', error);
+                    alert('Unable to update the score. Check the browser console for details.');
+                });
         });
 
-        // Real-time listener for live updates across all devices
-        onValue(scoresRef, (snapshot) => {
-            const scores = snapshot.val();
-            if (scores) {
-                updateScores(scores);
-                updateHoleScores(scores);
-            } else {
-                // Initialize if no data exists
-                const defaultScores = initializeScores();
-                updateScores(defaultScores);
-                updateHoleScores(defaultScores);
-            }
+        document.getElementById('clearScoresBtn').addEventListener('click', () => {
+            if (!confirm('Are you sure you want to clear ALL scores? This cannot be undone!')) return;
+            set(scoresRef, getDefaultScores());
+            alert('All scores have been cleared!');
         });
-
-        // Show connection status
-        const connectionStatus = document.createElement('div');
-        connectionStatus.id = 'connection-status';
-        connectionStatus.style.cssText = `
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 5px 10px;
-            background: #2c5f2d;
-            color: white;
-            border-radius: 4px;
-            font-size: 12px;
-            z-index: 1000;
-        `;
-        connectionStatus.textContent = '🔄 Connecting...';
-        document.body.appendChild(connectionStatus);
-
-        // Update connection status
-        setTimeout(() => {
-            connectionStatus.textContent = '🟢 Live Updates Active';
-            setTimeout(() => {
-                connectionStatus.style.display = 'none';
-            }, 3000);
-        }, 2000);
     </script>
 </body>
 </html>
