@@ -38,10 +38,10 @@
                     <label for="teamName">Team Name:</label>
                     <select id="teamName" required>
                         <option value="">Select Team</option>
-                        <option value="Team 1">Team 1</option>
-                        <option value="Team 2">Team 2</option>
-                        <option value="Team 3">Team 3</option>
-                        <option value="Team 4">Team 4</option>
+                        <option value="PV Alley">PV Alley</option>
+                        <option value="Over Par and Under the Influence">Over Par and Under the Influence</option>
+                        <option value="Gods of the Green">Gods of the Green</option>
+                        <option value="Muligan Ultras">Muligan Ultras</option>
                     </select>
                 </div>
 
@@ -107,10 +107,10 @@
                         <tr>
                             <th>Hole</th>
                             <th>Par</th>
-                            <th>Team 1</th>
-                            <th>Team 2</th>
-                            <th>Team 3</th>
-                            <th>Team 4</th>
+                            <th>PV Alley</th>
+                            <th>Over Par and Under the Influence</th>
+                            <th>Gods of the Green</th>
+                            <th>Muligan Ultras</th>
                         </tr>
                     </thead>
                     <tbody id="holeScoresBody">
@@ -154,10 +154,10 @@
 
         function getDefaultScores() {
             return {
-                'Team 1': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
-                'Team 2': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
-                'Team 3': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
-                'Team 4': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null }
+                'PV Alley': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                'Over Par and Under the Influence': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                'Gods of the Green': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                'Muligan Ultras': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null }
             };
         }
 
@@ -212,10 +212,10 @@
                 row.innerHTML = `
                     <td>${hole}</td>
                     <td>${coursePar[hole]}</td>
-                    <td>${scores['Team 1']?.scores?.[hole] ?? '-'}</td>
-                    <td>${scores['Team 2']?.scores?.[hole] ?? '-'}</td>
-                    <td>${scores['Team 3']?.scores?.[hole] ?? '-'}</td>
-                    <td>${scores['Team 4']?.scores?.[hole] ?? '-'}</td>
+                    <td>${scores['PV Alley']?.scores?.[hole] ?? '-'}</td>
+                    <td>${scores['Over Par and Under the Influence']?.scores?.[hole] ?? '-'}</td>
+                    <td>${scores['Gods of the Green']?.scores?.[hole] ?? '-'}</td>
+                    <td>${scores['Muligan Ultras']?.scores?.[hole] ?? '-'}</td>
                 `;
                 holeScoresBody.appendChild(row);
             }
