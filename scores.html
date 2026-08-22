@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#2c5f2d">
+    <meta name="description" content="Live Golf Tournament Scores">
+    <title>Live Scores - FGC</title>
+    <link rel="icon" type="image/png" href="public/images/fgc.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo" aria-label="Return to tournament selection">
+                <img src="public/images/fgc.png" alt="FRC Logo" class="logo-image">
+                <span>FRC</span>
+            </a>
+            <ul class="nav-links">
+                <li><a id="scoresHomeLink" href="frog-rock-open.html">Home</a></li>
+                <li><a id="scoresAboutLink" href="frog-rock-open.html#about">About</a></li>
+                <li><a href="scores.html" class="active">Live Scores</a></li>
+                <li><a id="scoresContactLink" href="frog-rock-open.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Live Tournament Scores</h1>
+            <p id="scoresDescription">Real-time updates from the Frog Rock Classic</p>
+        </section>
+
+        <section class="score-input">
+            <h2>Update Scores</h2>
+            <form id="scoreForm">
+                <div class="form-group">
+                    <label for="teamName">Team Name:</label>
+                    <select id="teamName" required>
+                        <option value="">Select Team</option>
+                        <option value="PV Alley">PV Alley</option>
+                        <option value="Over Par and Under the Influence">Over Par and Under the Influence</option>
+                        <option value="Gods of the Green">Gods of the Green</option>
+                        <option value="Muligan Ultras">Muligan Ultras</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="holeNumber">Hole Number:</label>
+                    <select id="holeNumber" required>
+                        <option value="">Select Hole</option>
+                        <option value="1">Hole 1</option>
+                        <option value="2">Hole 2</option>
+                        <option value="3">Hole 3</option>
+                        <option value="4">Hole 4</option>
+                        <option value="5">Hole 5</option>
+                        <option value="6">Hole 6</option>
+                        <option value="7">Hole 7</option>
+                        <option value="8">Hole 8</option>
+                        <option value="9">Hole 9</option>
+                        <option value="10">Hole 10</option>
+                        <option value="11">Hole 11</option>
+                        <option value="12">Hole 12</option>
+                        <option value="13">Hole 13</option>
+                        <option value="14">Hole 14</option>
+                        <option value="15">Hole 15</option>
+                        <option value="16">Hole 16</option>
+                        <option value="17">Hole 17</option>
+                        <option value="18">Hole 18</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="score">Score:</label>
+                    <input type="number" id="score" min="1" max="10" required>
+                </div>
+
+                <button type="submit" class="submit-btn">Update Score</button>
+            </form>
+        </section>
+
+        <section class="live-scores">
+            <h2>Current Standings</h2>
+            <div class="scores-container">
+                <table class="scores-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Total Score</th>
+                            <th>Holes Played</th>
+                            <th>Over/Under Par</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoresBody">
+                        <!-- Scores will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="hole-by-hole">
+            <h2>Hole-by-Hole Scores</h2>
+            <div class="hole-scores-container">
+                <table class="hole-scores-table">
+                    <thead>
+                        <tr>
+                            <th>Hole</th>
+                            <th>Par</th>
+                            <th id="yardageHeader" hidden>White Tee Yardage</th>
+                            <th>PV Alley</th>
+                            <th>Over Par and Under the Influence</th>
+                            <th>Gods of the Green</th>
+                            <th>Muligan Ultras</th>
+                        </tr>
+                    </thead>
+                    <tbody id="holeScoresBody">
+                        <!-- Hole scores will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="admin-controls">
+            <button id="clearScoresBtn" class="clear-btn" title="Clear GTO Scores (Admin Only)">🗑️ Clear GTO Scores</button>
+        </div>
+        <p id="scoresFooter">&copy; 2026 Frog Rock Classic. All rights reserved.</p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getDatabase, ref, set, onValue, get } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWTd2_Kvw6u6YeV1rPms_VIzn_uXc3U2o",
+            authDomain: "frog-rock-classic.firebaseapp.com",
+            databaseURL: "https://frog-rock-classic-default-rtdb.firebaseio.com",
+            projectId: "frog-rock-classic",
+            storageBucket: "frog-rock-classic.firebasestorage.app",
+            messagingSenderId: "1025249068857",
+            appId: "1:1025249068857:web:4d1a8e58dd4ab08c760ae8",
+            measurementId: "G-Z8E03XRK0P"
+        };
+
+        const isGreenTree = new URLSearchParams(window.location.search).get('tournament') === 'gto';
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const scoresRef = ref(database, isGreenTree ? 'green-tree-scores' : 'tournament-scores');
+        const clearScoresBtn = document.getElementById('clearScoresBtn');
+
+        if (isGreenTree) {
+            document.body.classList.add('green-tree-page');
+            document.title = 'Live Scores - GTO';
+            document.querySelector('.logo span').textContent = 'GTO';
+            document.querySelector('.logo-image').src = 'public/images/GTO%20logo.png';
+            document.querySelector('.logo-image').alt = 'GTO Logo';
+            document.querySelector('link[rel="icon"]').href = 'public/images/GTO%20logo.png';
+            document.querySelector('.hero h1').textContent = 'Green Tree Open Scores';
+            document.getElementById('scoresDescription').textContent = 'Real-time updates from the Green Tree Open';
+            document.getElementById('scoresFooter').innerHTML = '&copy; 2026 Green Tree Open. All rights reserved.';
+            document.getElementById('scoresHomeLink').href = 'green-tree-open.html';
+            document.getElementById('scoresAboutLink').href = 'green-tree-open.html#about';
+            document.getElementById('scoresContactLink').href = 'green-tree-open.html#contact';
+            document.getElementById('yardageHeader').hidden = false;
+        } else {
+            clearScoresBtn.closest('.admin-controls').remove();
+        }
+
+        const frogRockPar = {
+            1: 4, 2: 5, 3: 4, 4: 3, 5: 4, 6: 4, 7: 4, 8: 5, 9: 3,
+            10: 4, 11: 4, 12: 4, 13: 3, 14: 3, 15: 3, 16: 5, 17: 5, 18: 4
+        };
+
+        const greenTreePar = {
+            1: 5, 2: 4, 3: 6, 4: 3, 5: 4, 6: 4, 7: 3, 8: 4, 9: 4,
+            10: 3, 11: 4, 12: 4, 13: 4, 14: 4, 15: 3, 16: 4, 17: 4, 18: 5
+        };
+
+        const greenTreeWhiteTeeYardage = {
+            1: 455, 2: 323, 3: 662, 4: 105, 5: 236, 6: 242, 7: 139, 8: 367, 9: 385,
+            10: 145, 11: 268, 12: 250, 13: 229, 14: 370, 15: 138, 16: 272, 17: 321, 18: 440
+        };
+
+        const coursePar = isGreenTree ? greenTreePar : frogRockPar;
+
+        function getDefaultScores() {
+            return {
+                'PV Alley': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                'Over Par and Under the Influence': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                'Gods of the Green': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null },
+                'Muligan Ultras': { scores: {}, total: 0, holesPlayed: 0, lastUpdate: null }
+            };
+        }
+
+        function normalizeScores(scores) {
+            const normalized = getDefaultScores();
+            if (!scores || typeof scores !== 'object') return normalized;
+
+            Object.keys(normalized).forEach((teamName) => {
+                if (scores[teamName] && typeof scores[teamName] === 'object') {
+                    normalized[teamName] = {
+                        ...normalized[teamName],
+                        ...scores[teamName],
+                        scores: {
+                            ...normalized[teamName].scores,
+                            ...(scores[teamName].scores || {})
+                        }
+                    };
+                }
+            });
+
+            return normalized;
+        }
+
+        function updateScores(scores) {
+            const scoresBody = document.getElementById('scoresBody');
+            scoresBody.innerHTML = '';
+            const sortedTeams = Object.keys(scores).sort((a, b) => scores[a].total - scores[b].total);
+
+            sortedTeams.forEach(teamName => {
+                const team = scores[teamName];
+                const playedPar = Object.keys(team.scores).reduce((totalPar, hole) => totalPar + coursePar[hole], 0);
+                const scoreDifference = team.holesPlayed > 0 ? team.total - playedPar : null;
+                const overUnderPar = scoreDifference === null ? '-' : scoreDifference === 0 ? 'E' : scoreDifference > 0 ? `+${scoreDifference}` : scoreDifference;
+                const lastUpdate = team.lastUpdate ? new Date(team.lastUpdate).toLocaleTimeString() : 'No scores';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${teamName}</td>
+                    <td>${team.total}</td>
+                    <td>${team.holesPlayed}</td>
+                    <td>${overUnderPar}</td>
+                    <td>${lastUpdate}</td>
+                `;
+                scoresBody.appendChild(row);
+            });
+        }
+
+        function updateHoleScores(scores) {
+            const holeScoresBody = document.getElementById('holeScoresBody');
+            holeScoresBody.innerHTML = '';
+
+            for (let hole = 1; hole <= 18; hole++) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${hole}</td>
+                    <td>${coursePar[hole]}</td>
+                    ${isGreenTree ? `<td>${greenTreeWhiteTeeYardage[hole]}</td>` : ''}
+                    <td>${scores['PV Alley']?.scores?.[hole] ?? '-'}</td>
+                    <td>${scores['Over Par and Under the Influence']?.scores?.[hole] ?? '-'}</td>
+                    <td>${scores['Gods of the Green']?.scores?.[hole] ?? '-'}</td>
+                    <td>${scores['Muligan Ultras']?.scores?.[hole] ?? '-'}</td>
+                `;
+                holeScoresBody.appendChild(row);
+            }
+        }
+
+        onValue(scoresRef, (snapshot) => {
+            if (!snapshot.exists()) {
+                set(scoresRef, getDefaultScores());
+                return;
+            }
+            const scores = normalizeScores(snapshot.val());
+            updateScores(scores);
+            updateHoleScores(scores);
+        }, (error) => {
+            console.error('Firebase read failed:', error);
+            const scores = getDefaultScores();
+            updateScores(scores);
+            updateHoleScores(scores);
+        });
+
+        document.getElementById('scoreForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const teamName = document.getElementById('teamName').value;
+            const holeNumber = parseInt(document.getElementById('holeNumber').value, 10);
+            const score = parseInt(document.getElementById('score').value, 10);
+
+            console.log('Submit pressed', { teamName, holeNumber, score });
+
+            if (!teamName || !holeNumber || !score) {
+                alert('Please select a team, hole, and enter a score.');
+                return;
+            }
+
+            get(scoresRef)
+                .then((snapshot) => {
+                    const scores = normalizeScores(snapshot.val());
+                    scores[teamName].scores[holeNumber] = score;
+                    scores[teamName].total = Object.values(scores[teamName].scores).reduce((sum, s) => sum + s, 0);
+                    scores[teamName].holesPlayed = Object.keys(scores[teamName].scores).length;
+                    scores[teamName].lastUpdate = new Date().toISOString();
+                    return set(scoresRef, scores);
+                })
+                .then(() => {
+                    document.getElementById('scoreForm').reset();
+                    alert('Score updated successfully!');
+                })
+                .catch((error) => {
+                    console.error('Score submit failed:', error);
+                    alert('Unable to update the score. Check the browser console for details.');
+                });
+        });
+
+        if (isGreenTree) {
+            clearScoresBtn.addEventListener('click', () => {
+                const password = prompt('Enter the GTO admin password:');
+                if (password !== '0909') {
+                    alert('Incorrect password. GTO scores were not cleared.');
+                    return;
+                }
+                if (!confirm('Are you sure you want to clear all GTO scores? This cannot be undone!')) return;
+                set(scoresRef, getDefaultScores())
+                    .then(() => alert('All GTO scores have been cleared!'))
+                    .catch((error) => {
+                        console.error('GTO score reset failed:', error);
+                        alert('Unable to clear GTO scores. Check the browser console for details.');
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
