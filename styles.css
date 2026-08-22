@@ -1018,6 +1018,15 @@ footer p {
     .scores-table td {
         padding: 0.4rem 0.6rem;
         white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .scores-table th:first-child,
+    .scores-table td:first-child {
+        text-align: left;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.25;
     }
 
     .hole-scores-table th,
