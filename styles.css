@@ -991,6 +991,29 @@ footer p {
         font-size: 0.8rem;
     }
 
+    .scores-table {
+        table-layout: fixed;
+    }
+
+    .scores-table th:nth-child(1),
+    .scores-table td:nth-child(1) {
+        width: 34%;
+    }
+
+    .scores-table th:nth-child(2),
+    .scores-table td:nth-child(2),
+    .scores-table th:nth-child(3),
+    .scores-table td:nth-child(3) {
+        width: 17%;
+    }
+
+    .scores-table th:nth-child(4),
+    .scores-table td:nth-child(4) {
+        width: 32%;
+        display: table-cell !important;
+        white-space: normal;
+    }
+
     .scores-table th,
     .scores-table td {
         padding: 0.4rem 0.6rem;
