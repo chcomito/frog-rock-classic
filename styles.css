@@ -750,6 +750,54 @@ footer p {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .landing-main {
+        min-height: 100svh;
+        padding: 2.25rem 1rem;
+    }
+
+    .landing-intro {
+        margin-bottom: 2rem;
+    }
+
+    .landing-logos {
+        gap: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+    .landing-logo {
+        width: 64px;
+        height: 64px;
+    }
+
+    .landing-kicker {
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+    }
+
+    .landing-intro h1 {
+        font-size: clamp(2rem, 10vw, 3rem);
+        margin-bottom: 0.75rem;
+    }
+
+    .landing-copy {
+        font-size: 0.92rem;
+    }
+
+    .open-choices {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .open-bubble {
+        min-height: 190px;
+        padding: 1.35rem 1.5rem;
+        border-radius: 24px;
+    }
+
+    .bubble-title {
+        font-size: clamp(1.7rem, 8vw, 2.35rem);
+    }
+
     nav {
         flex-direction: column;
         gap: 1rem;
@@ -822,6 +870,24 @@ footer p {
 
     main {
         padding: 1rem 0.5rem;
+    }
+
+    .landing-main {
+        padding: 1.5rem 1rem;
+    }
+
+    .landing-logo {
+        width: 56px;
+        height: 56px;
+    }
+
+    .landing-intro {
+        margin-bottom: 1.5rem;
+    }
+
+    .open-bubble {
+        min-height: 165px;
+        padding: 1.15rem 1.25rem;
     }
 
     header {
@@ -937,9 +1003,7 @@ footer p {
         font-size: 0.75rem;
     }
 
-    /* Hide less important columns on very small screens */
-    .scores-table th:nth-child(4),
-    .scores-table td:nth-child(4),
+    /* Keep the over/under result visible on very small screens */
     .scores-table th:nth-child(5),
     .scores-table td:nth-child(5) {
         display: none;
