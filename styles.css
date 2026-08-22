@@ -994,33 +994,35 @@ footer p {
     .scores-table {
         table-layout: fixed;
         height: auto;
+        font-size: 0.74rem;
     }
 
     .scores-table th:nth-child(1),
     .scores-table td:nth-child(1) {
-        width: 34%;
+        width: 40%;
+    }
+
+    .scores-table th:nth-child(3),
+    .scores-table td:nth-child(3) {
+        width: 18%;
     }
 
     .scores-table th:nth-child(2),
     .scores-table td:nth-child(2),
-    .scores-table th:nth-child(3),
-    .scores-table td:nth-child(3) {
-        width: 17%;
-    }
-
     .scores-table th:nth-child(4),
     .scores-table td:nth-child(4) {
-        width: 32%;
+        width: 21%;
         display: table-cell !important;
-        white-space: normal;
     }
 
     .scores-table th,
     .scores-table td {
-        padding: 0.4rem 0.6rem;
-        white-space: nowrap;
+        padding: 0.45rem 0.25rem;
+        white-space: normal;
         vertical-align: middle;
         line-height: 1.35;
+        overflow-wrap: anywhere;
+        text-align: center;
     }
 
     .scores-table th:first-child,
@@ -1030,6 +1032,7 @@ footer p {
         overflow-wrap: anywhere;
         line-height: 1.4;
         vertical-align: top;
+        text-align: left;
     }
 
     .scores-table tbody tr:first-child td {
